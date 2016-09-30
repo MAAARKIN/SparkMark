@@ -13,9 +13,9 @@ import br.com.mark.spark.repository.UserRepository;
 
 @Repository
 public class UserDAO implements UserRepository {
-	
+
 	private JdbcTemplate jdbcTemplate;
-	
+
 	public UserDAO(DataSource dataSource) {
 		// TODO Auto-generated constructor stub
 		this.jdbcTemplate = new JdbcTemplate(dataSource);
@@ -23,42 +23,32 @@ public class UserDAO implements UserRepository {
 
 	@Override
 	public User findById(Long id) {
-		// TODO Auto-generated method stub
-		return null;
+		String sql = "SELECT * FROM USER WHERE ID = ?";
+		return (User) jdbcTemplate.queryForObject(sql, new Object[] { id }, new BeanPropertyRowMapper<User>(User.class));
 	}
 
 	@Override
 	public List<User> findAll() {
 		String sql = "SELECT * FROM USER";
-		List<User> users = jdbcTemplate.query(sql, new BeanPropertyRowMapper(User.class));
-		System.out.println("total"+users.size());
-		System.out.println(users);
-		
-		
-//		List<User> users = new ArrayList<User>();
-		
-//		List<Map<String,Object>> rows = jdbcTemplate.queryForList(sql);
-//		
-//		for (Map<String, Object> row : rows) {
-//			User user= new User();
-//			user.setName((String)row.get("NAME"));
-//			user.setAge((Integer)row.get("AGE"));
-//			users.add(user);
-//		}
-		
-		return users;
+		return jdbcTemplate.query(sql, new BeanPropertyRowMapper<User>(User.class));
 	}
 
 	@Override
 	public void save(User user) {
-		String sql = "INSERT INTO CUSTOMER (NAME, AGE) VALUES (?, ?)";
-		jdbcTemplate.update(sql, new Object[]{ user.getName(), user.getAge() });
+		String sql = "INSERT INTO USER (NAME, AGE) VALUES (?, ?)";
+		jdbcTemplate.update(sql, new Object[] { user.getName(), user.getAge() });
 	}
 
 	@Override
-	public void delete(User user) {
-		// TODO Auto-generated method stub
-		
+	public void delete(Long id) {
+		String sql = "DELETE FROM USER WHERE ID = ? ";
+		jdbcTemplate.update(sql, new Object[] { id });
+	}
+
+	@Override
+	public void update(User user) {
+		String sql = "UPDATE USER SET name=?, age=? WHERE id=?";
+		jdbcTemplate.update(sql, new Object[] { user.getName(), user.getAge(), user.getId() });
 	}
 
 }
